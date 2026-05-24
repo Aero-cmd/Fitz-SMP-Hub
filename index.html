@@ -43,17 +43,23 @@
     <script>
         const GIST_ID = "40e5df39ba1074304e23c0c5c74e3efc";
 
-        fetch(`https://api.github.com/gists/${GIST_ID}`)
-            .then(r => r.json())
-            .then(data => {
-                const content = JSON.parse(data.files["tunnels.json"].content);
-                document.getElementById("voice-link").href = content.voice;
-                document.getElementById("bluemap-link").href = content.bluemap;
-                document.getElementById("status").textContent = "Server is online ✅";
-            })
-            .catch(() => {
-                document.getElementById("status").textContent = "Could not load links — server may be offline ❌";
-            });
+fetch(`https://api.github.com/gists/${GIST_ID}`)
+    .then(r => r.json())
+    .then(data => {
+        const content = JSON.parse(data.files["tunnels.json"].content);
+        
+        // Extract just the URL (everything before the first space)
+        const voiceUrl = content.voice.split(" ")[0];
+        const bluemapUrl = content.bluemap.split(" ")[0];
+        
+        document.getElementById("voice-link").href = voiceUrl;
+        document.getElementById("bluemap-link").href = bluemapUrl;
+        document.getElementById("status").textContent = "Server is online ✅";
+    })
+    .catch(() => {
+        document.getElementById("status").textContent = "Could not load links — server may be offline ❌";
+    });
+    
     </script>
 </body>
 </html>
