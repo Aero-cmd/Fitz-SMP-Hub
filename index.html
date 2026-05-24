@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitzSMP</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #1a1a2e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 2rem; }
+        .links { display: flex; gap: 1rem; }
+        a {
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: white;
+            transition: opacity 0.2s;
+        }
+        a:hover { opacity: 0.8; }
+        .voice { background: #5865f2; }
+        .bluemap { background: #2d6a4f; }
+        #status { margin-top: 1rem; font-size: 0.9rem; opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <h1>🎮 FitzSMP</h1>
+    <div class="links">
+        <a id="voice-link" class="voice" href="#" target="_blank">🎤 Voice Chat</a>
+        <a id="bluemap-link" class="bluemap" href="#" target="_blank">🗺️ BlueMap</a>
+    </div>
+    <p id="status">Loading...</p>
+
+    <script>
+        const GIST_ID = "40e5df39ba1074304e23c0c5c74e3efc";
+
+        fetch(`https://api.github.com/gists/${GIST_ID}`)
+            .then(r => r.json())
+            .then(data => {
+                const content = JSON.parse(data.files["tunnels.json"].content);
+                document.getElementById("voice-link").href = content.voice;
+                document.getElementById("bluemap-link").href = content.bluemap;
+                document.getElementById("status").textContent = "Server is online ✅";
+            })
+            .catch(() => {
+                document.getElementById("status").textContent = "Could not load links — server may be offline ❌";
+            });
+    </script>
+</body>
+</html>
