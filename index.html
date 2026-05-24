@@ -1,65 +1,738 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitzSMP</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background: #1a1a2e;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        h1 { font-size: 2.5rem; margin-bottom: 2rem; }
-        .links { display: flex; gap: 1rem; }
-        a {
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 1.2rem;
-            color: white;
-            transition: opacity 0.2s;
-        }
-        a:hover { opacity: 0.8; }
-        .voice { background: #5865f2; }
-        .bluemap { background: #2d6a4f; }
-        #status { margin-top: 1rem; font-size: 0.9rem; opacity: 0.6; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FitzSMP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --border: #2e2e2e;
+      --accent: #4ade80;
+      --accent2: #facc15;
+      --text: #e5e5e5;
+      --muted: #666;
+      --sidebar-w: 220px;
+      --pixel: 2px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Sans', sans-serif;
+      display: flex;
+      min-height: 100vh;
+      image-rendering: pixelated;
+    }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: var(--pixel) solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      padding: 24px 16px 20px;
+      border-bottom: var(--pixel) solid var(--border);
+    }
+
+    .sidebar-logo span {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      line-height: 1.8;
+      display: block;
+    }
+
+    .sidebar-logo .sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .sidebar-section {
+      padding: 16px 12px 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--text);
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      transition: background 0.15s, color 0.15s;
+      border-left: 3px solid transparent;
+    }
+
+    .nav-btn:hover {
+      background: rgba(74,222,128,0.07);
+      color: var(--accent);
+    }
+
+    .nav-btn.active {
+      border-left-color: var(--accent);
+      color: var(--accent);
+      background: rgba(74,222,128,0.1);
+    }
+
+    .nav-btn .icon { font-size: 14px; width: 18px; text-align: center; }
+
+    .sidebar-divider {
+      border: none;
+      border-top: var(--pixel) solid var(--border);
+      margin: 8px 12px;
+    }
+
+    .external-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .external-btn:hover { color: var(--text); }
+    .external-btn .icon { font-size: 14px; width: 18px; text-align: center; }
+
+    #vc-link-sidebar, #bluemap-link-sidebar {
+      font-size: 10px;
+    }
+
+    /* ── MAIN ── */
+    #main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── PAGES ── */
+    .page { display: none; flex-direction: column; flex: 1; }
+    .page.active { display: flex; }
+
+    /* ── HOME ── */
+    #home {
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(255,255,255,0.015) 31px, rgba(255,255,255,0.015) 32px),
+        repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(255,255,255,0.015) 31px, rgba(255,255,255,0.015) 32px),
+        var(--bg);
+    }
+
+    .home-hero {
+      padding: 80px 60px 60px;
+      max-width: 760px;
+    }
+
+    .home-hero .label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .home-hero .label::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--accent);
+    }
+
+    .home-hero h1 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 32px;
+      line-height: 1.5;
+      color: #fff;
+      margin-bottom: 24px;
+    }
+
+    .home-hero h1 span { color: var(--accent); }
+
+    .home-hero p {
+      font-size: 15px;
+      color: #999;
+      line-height: 1.8;
+      max-width: 520px;
+      margin-bottom: 40px;
+    }
+
+    .connect-box {
+      background: var(--surface);
+      border: var(--pixel) solid var(--border);
+      padding: 24px 28px;
+      max-width: 420px;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .connect-box::before {
+      content: 'HOW TO JOIN';
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--accent);
+      position: absolute;
+      top: -8px; left: 16px;
+      background: var(--bg);
+      padding: 0 6px;
+    }
+
+    .connect-box .field {
+      margin-bottom: 16px;
+    }
+
+    .connect-box .field:last-child { margin-bottom: 0; }
+
+    .connect-box .field-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    .connect-box .field-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 15px;
+      color: var(--accent2);
+      font-weight: 600;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .btn:hover { transform: translate(-2px, -2px); filter: brightness(1.1); }
+    .btn:active { transform: translate(0, 0); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 4px 4px 0 #1a5c33;
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: var(--pixel) solid var(--border);
+      box-shadow: 4px 4px 0 #111;
+    }
+
+    .home-links { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* ── WIKI ── */
+    #wiki { padding: 60px; }
+
+    .page-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: var(--pixel) solid var(--border);
+    }
+
+    .page-header .label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .page-header h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 18px;
+      color: #fff;
+      line-height: 1.6;
+    }
+
+    .wiki-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .wiki-card {
+      background: var(--surface);
+      border: var(--pixel) solid var(--border);
+      padding: 24px;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+
+    .wiki-card:hover {
+      border-color: var(--accent);
+      transform: translate(-2px, -2px);
+    }
+
+    .wiki-card .card-icon { font-size: 24px; margin-bottom: 12px; }
+
+    .wiki-card h3 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--accent);
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    .wiki-card p {
+      font-size: 13px;
+      color: #888;
+      line-height: 1.7;
+    }
+
+    .wiki-article { display: none; }
+    .wiki-article.active { display: block; }
+
+    .back-btn {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0;
+      transition: color 0.15s;
+    }
+
+    .back-btn:hover { color: var(--accent); }
+
+    .article-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      color: #fff;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .article-body h4 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      line-height: 1.6;
+    }
+
+    .article-body p {
+      font-size: 14px;
+      color: #aaa;
+      line-height: 1.8;
+      margin-bottom: 14px;
+      max-width: 640px;
+    }
+
+    .article-body code {
+      font-family: 'IBM Plex Mono', monospace;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      font-size: 13px;
+      color: var(--accent2);
+    }
+
+    /* ── ABOUT ── */
+    #about { padding: 60px; }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 800px;
+    }
+
+    .about-card {
+      background: var(--surface);
+      border: var(--pixel) solid var(--border);
+      padding: 28px;
+    }
+
+    .about-card h3 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: var(--accent);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .about-card p {
+      font-size: 13px;
+      color: #888;
+      line-height: 1.8;
+    }
+
+    .about-card .big-val {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 18px;
+      color: var(--accent2);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .about-card .small-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .tech-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .tech-item {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: #888;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tech-item::before {
+      content: '▸';
+      color: var(--accent);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: auto;
+      padding: 20px 60px;
+      border-top: var(--pixel) solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    footer a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    footer a:hover { color: var(--text); }
+
+    /* ── STATUS DOT ── */
+    .status-dot {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      display: inline-block;
+      animation: blink 2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  </style>
 </head>
 <body>
-    <h1>🎮 FitzSMP</h1>
-    <div class="links">
-        <a id="voice-link" class="voice" href="#" target="_blank">🎤 Voice Chat</a>
-        <a id="bluemap-link" class="bluemap" href="#" target="_blank">🗺️ BlueMap</a>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <span>FITZ<br/>SMP</span>
+    <div class="sub">minecraft server</div>
+  </div>
+
+  <div class="sidebar-section">Pages</div>
+  <button class="nav-btn active" onclick="showPage('home')">
+    <span class="icon">⛏</span> Home
+  </button>
+  <button class="nav-btn" onclick="showPage('wiki')">
+    <span class="icon">📖</span> Wiki
+  </button>
+  <button class="nav-btn" onclick="showPage('about')">
+    <span class="icon">💡</span> About
+  </button>
+
+  <hr class="sidebar-divider"/>
+
+  <div class="sidebar-section">Links</div>
+  <a class="external-btn" id="vc-link-sidebar" href="#" target="_blank">
+    <span class="icon">🎤</span> Voice Chat
+  </a>
+  <a class="external-btn" id="bluemap-link-sidebar" href="#" target="_blank">
+    <span class="icon">🗺</span> BlueMap
+  </a>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- HOME -->
+  <div class="page active" id="home">
+    <div class="home-hero">
+      <div class="label"><span class="status-dot"></span> Server Online</div>
+      <h1>Welcome to<br/><span>FitzSMP</span></h1>
+      <p>A survival Minecraft server with crossplay between Java and Bedrock. Jump in, build stuff, cause chaos.</p>
+
+      <div class="connect-box">
+        <div class="field">
+          <div class="field-label">IP Address</div>
+          <div class="field-value">fitzsmp.cloudplay.fun</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Port</div>
+          <div class="field-value">19000</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Version</div>
+          <div class="field-value">Java + Bedrock</div>
+        </div>
+      </div>
+
+      <div class="home-links">
+        <button class="btn btn-primary" onclick="showPage('wiki')">📖 Read the Wiki</button>
+        <a class="btn btn-secondary" id="bluemap-home" href="#" target="_blank">🗺 View Map</a>
+      </div>
     </div>
-    <p id="status">Loading...</p>
+    <footer>
+      <span>FitzSMP © 2026</span>
+      <a href="#" id="whatsapp-link" target="_blank">💬 WhatsApp Group</a>
+    </footer>
+  </div>
 
-    <script>
-        const GIST_ID = "40e5df39ba1074304e23c0c5c74e3efc";
+  <!-- WIKI -->
+  <div class="page" id="wiki">
+    <div style="padding: 60px; flex: 1;">
+      <div class="page-header">
+        <div class="label">Knowledge Base</div>
+        <h2>Wiki</h2>
+      </div>
 
-fetch(`https://api.github.com/gists/${GIST_ID}`)
+      <!-- Wiki index -->
+      <div id="wiki-index">
+        <div class="wiki-grid">
+          <div class="wiki-card" onclick="showArticle('getting-started')">
+            <div class="card-icon">🚀</div>
+            <h3>Getting Started</h3>
+            <p>How to join the server, set up voice chat, and get going.</p>
+          </div>
+          <div class="wiki-card" onclick="showArticle('voice-chat')">
+            <div class="card-icon">🎤</div>
+            <h3>Voice Chat</h3>
+            <p>Setting up Simple Voice Chat for Java and Bedrock players.</p>
+          </div>
+          <div class="wiki-card" onclick="showArticle('rules')">
+            <div class="card-icon">📋</div>
+            <h3>Rules</h3>
+            <p>Server rules and guidelines. Read before playing.</p>
+          </div>
+          <div class="wiki-card" onclick="showArticle('plugins')">
+            <div class="card-icon">⚙️</div>
+            <h3>Plugins</h3>
+            <p>What plugins are running on the server and what they do.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Articles -->
+      <div id="wiki-articles">
+        <div class="wiki-article" id="article-getting-started">
+          <button class="back-btn" onclick="showWikiIndex()">← Back to Wiki</button>
+          <div class="article-title">Getting Started</div>
+          <div class="article-body">
+            <h4>Joining the Server</h4>
+            <p>Add the server in Minecraft using the IP <code>fitzsmp.cloudplay.fun</code> and port <code>19000</code>. Both Java and Bedrock editions are supported.</p>
+            <h4>Bedrock Players</h4>
+            <p>Bedrock players can connect using the same IP and port. Make sure to enter the port manually in the server address field.</p>
+            <h4>Voice Chat</h4>
+            <p>Once in the server, open the emote menu to get your voice chat link. See the Voice Chat wiki page for more details.</p>
+          </div>
+        </div>
+
+        <div class="wiki-article" id="article-voice-chat">
+          <button class="back-btn" onclick="showWikiIndex()">← Back to Wiki</button>
+          <div class="article-title">Voice Chat</div>
+          <div class="article-body">
+            <h4>Java Players</h4>
+            <p>Java players use the Simple Voice Chat mod. Download it from Modrinth and install it in your mods folder. Voice chat will work automatically when you join.</p>
+            <h4>Bedrock Players</h4>
+            <p>Bedrock players use SimpleVoiceGeyser. When you join the server, open the emote menu and you'll get a link to open in your browser. Allow microphone access and you're good to go.</p>
+            <h4>Troubleshooting</h4>
+            <p>If voice chat isn't working, make sure you're using HTTPS and have allowed microphone access in your browser. Try refreshing the page if the connection drops.</p>
+          </div>
+        </div>
+
+        <div class="wiki-article" id="article-rules">
+          <button class="back-btn" onclick="showWikiIndex()">← Back to Wiki</button>
+          <div class="article-title">Rules</div>
+          <div class="article-body">
+            <h4>General</h4>
+            <p>Be respectful to other players. Griefing and stealing are not allowed. Don't exploit bugs or use hacked clients.</p>
+            <h4>Building</h4>
+            <p>Don't build too close to other players' bases without permission. Keep the area around spawn clean.</p>
+            <h4>Chat</h4>
+            <p>Keep chat friendly. No spamming or excessive caps.</p>
+          </div>
+        </div>
+
+        <div class="wiki-article" id="article-plugins">
+          <button class="back-btn" onclick="showWikiIndex()">← Back to Wiki</button>
+          <div class="article-title">Plugins</div>
+          <div class="article-body">
+            <h4>Geyser + Floodgate</h4>
+            <p>Allows Bedrock players to join the Java server seamlessly.</p>
+            <h4>Simple Voice Chat</h4>
+            <p>Proximity voice chat for all players.</p>
+            <h4>BlueMap</h4>
+            <p>Live 3D map of the server world, viewable in your browser.</p>
+            <h4>SkinsRestorer</h4>
+            <p>Lets Bedrock players use custom skins.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <span>FitzSMP © 2026</span>
+      <a href="#" id="whatsapp-link-wiki" target="_blank">💬 WhatsApp Group</a>
+    </footer>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="page" id="about">
+    <div style="padding: 60px; flex: 1;">
+      <div class="page-header">
+        <div class="label">The Server</div>
+        <h2>About</h2>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>Server Address</h3>
+          <div class="big-val">fitzsmp.cloudplay.fun</div>
+          <div class="small-label">Port 19000</div>
+        </div>
+
+        <div class="about-card">
+          <h3>Edition</h3>
+          <div class="big-val">Java + Bedrock</div>
+          <div class="small-label">Crossplay via Geyser</div>
+        </div>
+
+        <div class="about-card" style="grid-column: 1 / -1;">
+          <h3>How It's Made</h3>
+          <p style="margin-bottom: 16px;">Edit this section to describe your server however you like.</p>
+          <div class="tech-stack">
+            <div class="tech-item">Paper 26.1.2 — server software</div>
+            <div class="tech-item">Geyser + Floodgate — Bedrock crossplay</div>
+            <div class="tech-item">Simple Voice Chat + SimpleVoiceGeyser — voice</div>
+            <div class="tech-item">BlueMap — live world map</div>
+            <div class="tech-item">TunnelMC + Cloudflare Tunnel — HTTPS tunneling</div>
+            <div class="tech-item">GitHub Pages — this website</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <span>FitzSMP © 2026</span>
+      <a href="#" id="whatsapp-link-about" target="_blank">💬 WhatsApp Group</a>
+    </footer>
+  </div>
+
+</div>
+
+<script>
+  const GIST_ID = "40e5df39ba1074304e23c0c5c74e3efc";
+  const WHATSAPP_URL = "#"; // Replace with your WhatsApp group link
+
+  // Set WhatsApp links
+  document.querySelectorAll('[id^="whatsapp-link"]').forEach(el => el.href = WHATSAPP_URL);
+
+  // Fetch tunnel URLs from Gist
+  fetch(`https://api.github.com/gists/${GIST_ID}`)
     .then(r => r.json())
     .then(data => {
-        const content = JSON.parse(data.files["tunnels.json"].content);
-        
-        // Extract just the URL (everything before the first space)
-        const voiceUrl = content.voice.split(" ")[0];
-        const bluemapUrl = content.bluemap.split(" ")[0];
-        
-        document.getElementById("voice-link").href = voiceUrl;
-        document.getElementById("bluemap-link").href = bluemapUrl;
-        document.getElementById("status").textContent = "Server is online ✅";
+      const content = JSON.parse(data.files["tunnels.json"].content);
+      const voiceUrl = content.voice.split(" ")[0];
+      const bluemapUrl = content.bluemap.split(" ")[0];
+
+      document.getElementById("vc-link-sidebar").href = voiceUrl;
+      document.getElementById("bluemap-link-sidebar").href = bluemapUrl;
+      document.getElementById("bluemap-home").href = bluemapUrl;
     })
     .catch(() => {
-        document.getElementById("status").textContent = "Could not load links — server may be offline ❌";
+      document.getElementById("vc-link-sidebar").style.opacity = "0.4";
+      document.getElementById("bluemap-link-sidebar").style.opacity = "0.4";
     });
-    
-    </script>
+
+  // Page navigation
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelector(`[onclick="showPage('${id}')"]`).classList.add('active');
+    if (id === 'wiki') showWikiIndex();
+  }
+
+  // Wiki navigation
+  function showArticle(id) {
+    document.getElementById('wiki-index').style.display = 'none';
+    document.querySelectorAll('.wiki-article').forEach(a => a.classList.remove('active'));
+    document.getElementById('article-' + id).classList.add('active');
+    document.getElementById('wiki-articles').style.display = 'block';
+  }
+
+  function showWikiIndex() {
+    document.getElementById('wiki-index').style.display = 'block';
+    document.getElementById('wiki-articles').style.display = 'none';
+    document.querySelectorAll('.wiki-article').forEach(a => a.classList.remove('active'));
+  }
+</script>
 </body>
 </html>
