@@ -6,7 +6,7 @@
   <title>FitzSMP</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Press+Start+2P&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet"/>
   <style>
     :root {
       --bg: #0c0c0c;
@@ -22,7 +22,7 @@
       --px: 2px;
       --body-font: 'Google Sans', sans-serif;
       --mono-font: 'Google Sans', sans-serif;
-      --pixel-font: 'Google Sans', monospace;
+      
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -67,10 +67,11 @@
     }
 
     .sidebar-logo-text span {
-      font-family: var(--pixel-font);
-      font-size: 11px;
+      font-family: var(--body-font);
+      font-size: 15px;
+      font-weight: 700;
       color: var(--accent);
-      line-height: 1.9;
+      line-height: 1.5;
       display: block;
     }
 
@@ -167,8 +168,9 @@
     }
 
     #topbar .topbar-title {
-      font-family: var(--pixel-font);
-      font-size: 10px;
+      font-family: var(--body-font);
+      font-size: 14px;
+      font-weight: 700;
       color: var(--accent);
     }
 
@@ -208,9 +210,10 @@
     }
 
     .home-hero h1 {
-      font-family: var(--pixel-font);
-      font-size: 28px;
-      line-height: 1.6;
+      font-family: var(--body-font);
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.2;
       color: #fff;
       margin-bottom: 20px;
     }
@@ -236,8 +239,10 @@
 
     .connect-box::before {
       content: 'HOW TO JOIN';
-      font-family: var(--pixel-font);
-      font-size: 7px;
+      font-family: var(--body-font);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
       color: var(--accent);
       position: absolute;
       top: -8px; left: 16px;
@@ -270,8 +275,10 @@
       align-items: center;
       gap: 8px;
       padding: 11px 20px;
-      font-family: var(--pixel-font);
-      font-size: 8px;
+      font-family: var(--body-font);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
       text-decoration: none;
       cursor: pointer;
       border: none;
@@ -302,10 +309,11 @@
     }
 
     .page-header h2 {
-      font-family: var(--pixel-font);
-      font-size: 16px;
+      font-family: var(--body-font);
+      font-size: 32px;
+      font-weight: 700;
       color: #fff;
-      line-height: 1.6;
+      line-height: 1.2;
     }
 
     /* ── WIKI ── */
@@ -329,11 +337,12 @@
     .wiki-card .card-icon { font-size: 22px; margin-bottom: 10px; }
 
     .wiki-card h3 {
-      font-family: var(--pixel-font);
-      font-size: 8px;
+      font-family: var(--body-font);
+      font-size: 14px;
+      font-weight: 700;
       color: var(--accent);
       margin-bottom: 8px;
-      line-height: 1.6;
+      line-height: 1.4;
     }
 
     .wiki-card p { font-size: 13px; color: #777; line-height: 1.7; }
@@ -359,19 +368,23 @@
     .back-btn:hover { color: var(--accent); }
 
     .article-title {
-      font-family: var(--pixel-font);
-      font-size: 13px;
+      font-family: var(--body-font);
+      font-size: 28px;
+      font-weight: 700;
       color: #fff;
       margin-bottom: 28px;
-      line-height: 1.6;
+      line-height: 1.2;
     }
 
     .article-body h4 {
-      font-family: var(--pixel-font);
-      font-size: 8px;
+      font-family: var(--body-font);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
       color: var(--accent);
       margin: 24px 0 10px;
-      line-height: 1.6;
+      line-height: 1.4;
     }
 
     .article-body p {
@@ -427,11 +440,12 @@
     }
 
     .rule-num {
-      font-family: var(--pixel-font);
-      font-size: 7px;
+      font-family: var(--body-font);
+      font-size: 11px;
+      font-weight: 700;
       color: var(--accent);
-      min-width: 24px;
-      padding-top: 4px;
+      min-width: 28px;
+      padding-top: 3px;
     }
 
     .rule-text { font-size: 14px; color: #999; line-height: 1.8; }
@@ -453,11 +467,14 @@
     }
 
     .about-card h3 {
-      font-family: var(--pixel-font);
-      font-size: 7px;
+      font-family: var(--body-font);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
       color: var(--accent);
       margin-bottom: 14px;
-      line-height: 1.6;
+      line-height: 1.4;
     }
 
     .about-card .big-val {
@@ -580,8 +597,8 @@
   <div class="page active" id="home">
     <div class="home-hero">
       <div class="label"><span class="status-dot" id="status-dot"></span> <span id="server-status">Checking...</span></div>
-      <h1>Welcome to<br/><span>FitzSMP</span></h1>
-      <p>A survival Minecraft server with crossplay between Java and Bedrock. Jump in, build stuff, cause chaos.</p>
+      <h1><span>FitzSMP</span></h1>
+      <p>A survival Minecraft server with crossplay between Java and Bedrock. Build stuff and cause chaos.</p>
       <div class="connect-box">
         <div class="field"><div class="field-label">IP Address</div><div class="field-value">fitzsmp.cloudplay.fun</div></div>
         <div class="field"><div class="field-label">Port</div><div class="field-value">19000</div></div>
@@ -593,7 +610,7 @@
       </div>
     </div>
     <footer>
-      <span>FitzSMP © 2026</span>
+      <span>FitzSMP 2026</span>
       <a href="#" id="whatsapp-link" target="_blank">💬 WhatsApp Group</a>
     </footer>
   </div>
@@ -705,7 +722,7 @@
       </div>
     </div>
     <footer>
-      <span>FitzSMP © 2026</span>
+      <span>FitzSMP 2026</span>
       <a href="#" id="whatsapp-link-wiki" target="_blank">💬 WhatsApp Group</a>
     </footer>
   </div>
@@ -743,7 +760,7 @@
       </div>
     </div>
     <footer>
-      <span>FitzSMP © 2026</span>
+      <span>FitzSMP 2026</span>
       <a href="#" id="whatsapp-link-about" target="_blank">💬 WhatsApp Group</a>
     </footer>
   </div>
@@ -752,7 +769,7 @@
 
 <script>
   const GIST_ID = "40e5df39ba1074304e23c0c5c74e3efc";
-  const WHATSAPP_URL = "#"; // Replace with your WhatsApp group link
+  const WHATSAPP_URL = "https://chat.whatsapp.com/EhFN9MoA0fC8cIFRzQ4rCi?mode=gi_t"; // Replace with your WhatsApp group link
 
   document.querySelectorAll('[id^="whatsapp-link"]').forEach(el => el.href = WHATSAPP_URL);
 
