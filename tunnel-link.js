@@ -9,8 +9,8 @@
  */
 
 // Replace with your gist ID and filename (must match config.yml).
-const GIST_ID = "your-gist-id-here";
-const GIST_FILENAME = "bluemap-link.json";
+const GIST_ID = "40e5df39ba1074304e23c0c5c74e3efc";
+const GIST_FILENAME = "tunnels.json";
 
 async function showTunnelLink() {
   const el = document.getElementById("tunnel-link");
